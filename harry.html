@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Mapa do Maroto de Camila</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=IM+Fell+DW+Pica+SC&family=Eagle+Lake&family=Cinzel+Decorative:wght@700&display=swap');
+
+        :root {
+            --pergaminho: #f2e3bc;
+            --tinta: #3e2719;
+            --sangue: #8b0000;
+            --ouro: #ffdf00;
+            --slytherin-green: #1a472a;
+            --slytherin-silver: #aaaaaa;
+        }
+
+        * { cursor: none; box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            width: 100vw; height: 100vh;
+            background-color: #0a0a0a;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            font-family: 'IM Fell DW Pica SC', serif;
+        }
+
+        #map-area {
+            position: absolute;
+            width: 96vw; height: 92vh;
+            background-color: var(--pergaminho);
+            background-image: url('https://www.transparenttextures.com/patterns/old-map.png');
+            border: 15px solid #2c1e16;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.5), 0 0 50px rgba(0,0,0,1);
+            z-index: 0;
+        }
+
+        /* --- CARTAZ DE PROCURADO --- */
+        .wanted-frame {
+            position: absolute;
+            top: 40px; left: 40px;
+            width: 200px;
+            height: 280px;
+            background: #d4c4a8;
+            border: 8px solid var(--tinta);
+            transform: rotate(-3deg);
+            z-index: 5;
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.5);
+            pointer-events: auto;
+            overflow: hidden;
+        }
+        
+        .wanted-image-bg {
+            width: 100%; height: 100%;
+            background-image: url('https://i.ibb.co/23PZyxcQ/Gemini-Generated-Image-nm31acnm31acnm31.png');
+            background-size: cover;
+            background-position: center;
+            filter: sepia(0.2) contrast(1.1);
+        }
+
+        /* --- VARINHA --- */
+        #wand {
+            position: fixed;
+            width: 6px; height: 130px;
+            background: linear-gradient(#3e2723, #1b110b);
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 10000;
+            transform-origin: top center;
+        }
+        .sparkle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: var(--ouro);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 8px var(--ouro);
+            z-index: 9999;
+        }
+
+        /* --- ENVELOPE E CARTA --- */
+        .main-stage {
+            position: relative;
+            z-index: 20;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .envelope {
+            position: relative;
+            width: 340px; height: 230px;
+            background: #c4ac7d;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            cursor: pointer;
+            transition: transform 0.5s;
+        }
+        .envelope::before {
+            content: ""; position: absolute; top: 0; z-index: 3;
+            border-top: 120px solid #bd9a62;
+            border-left: 170px solid transparent; border-right: 170px solid transparent;
+            transform-origin: top; transition: 0.6s 0.4s;
+        }
+        .wax-seal {
+            position: absolute; top: 95px; left: 145px;
+            width: 50px; height: 50px;
+            background: var(--sangue); border-radius: 50%;
+            z-index: 4; display: flex; align-items: center; justify-content: center;
+            color: var(--ouro); font-size: 28px; font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            transition: 0.5s;
+        }
+
+        .letter {
+            position: absolute; bottom: 10px; left: 10px;
+            width: 320px; height: 210px;
+            background: #fdf3d8;
+            padding: 25px; z-index: 2;
+            transition: 0.8s ease-in-out;
+            text-align: center;
+            border: 1px solid #d4c4a8;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .letter-text {
+            opacity: 0; transition: 1s 0.8s;
+            font-family: 'Dancing Script', cursive;
+            color: var(--tinta);
+        }
+
+        .open .envelope::before { transform: rotateX(180deg); z-index: 1; }
+        .open .wax-seal { opacity: 0; transform: scale(0); }
+        .open .letter {
+            height: 520px; width: 380px;
+            bottom: -150px; left: -20px;
+            z-index: 30;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.7);
+        }
+        .open .letter-text { opacity: 1; }
+
+        /* --- BOTÃO SONSERINA --- */
+        #dark-lord-btn {
+            position: absolute;
+            bottom: 30px; right: 30px;
+            background: var(--slytherin-green);
+            color: var(--slytherin-silver);
+            border: 2px solid var(--slytherin-silver);
+            font-family: 'IM Fell DW Pica SC', serif;
+            font-size: 11px;
+            padding: 8px 15px;
+            z-index: 10;
+            transition: all 0.5s ease;
+            pointer-events: auto;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        #dark-lord-btn::before {
+            content: "🐍";
+            font-size: 16px;
+        }
+        #dark-lord-btn:hover {
+            border-color: white;
+            color: white;
+            box-shadow: 0 0 20px rgba(26, 71, 42, 1);
+            transform: scale(1.05);
+        }
+
+        /* --- OVERLAY SONSERINA --- */
+        #slytherin-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, #0d2114 0%, #050a07 100%);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--slytherin-silver);
+            padding: 40px;
+            text-align: center;
+            border: 20px solid var(--slytherin-green);
+        }
+        #slytherin-overlay h2 {
+            font-family: 'Cinzel Decorative', cursive;
+            color: #2e7d32;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .close-dark {
+            margin-top: 40px;
+            background: var(--slytherin-silver);
+            color: var(--slytherin-green);
+            border: none;
+            padding: 12px 30px;
+            font-family: 'IM Fell DW Pica SC', serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-dark:hover { background: white; transform: scale(1.1); }
+
+        /* --- PEGADAS --- */
+        .footprint {
+            position: absolute; font-size: 18px; opacity: 0;
+            color: rgba(62, 39, 25, 0.6);
+            z-index: 2; pointer-events: none;
+        }
+        .footprint span {
+            font-size: 12px;
+            font-weight: bold;
+            display: block; 
+            margin-top: -5px;
+            color: var(--tinta);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map-area">
+        <div class="wanted-frame">
+            <div class="wanted-image-bg"></div>
+        </div>
+        <button id="dark-lord-btn">Segredo do Lord das Trevas</button>
+    </div>
+
+    <div class="main-stage">
+        <div class="envelope" id="env">
+            <div class="wax-seal">H</div>
+            <div class="letter">
+                <div class="letter-text">
+                    <h2 style="font-family: 'Eagle Lake'; color: var(--sangue);">Hogwarts</h2>
+                    <p style="font-size: 1.3rem;">Cara Camila Natani Pereira,</p>
+                    <p>Juro solenemente que percorri todos os corredores do castelo e não encontrei ninguém tão cativante quanto você.</p>
+                    <p>Obrigado por ser o meu feitiço Lumos nos momentos mais escuros.</p>
+                    <p>Você é a minha captura mais preciosa.</p>
+                    <p style="font-size: 1.5rem; margin-top: 30px; font-weight: bold; color: var(--sangue);">Malfeito feito! ❤️</p>
+                    <div style="font-size: 24px; margin-top: 15px;">⚡ ▕⃝⃤ 🦉</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="slytherin-overlay">
+        <h2>Puro-Sangue</h2>
+        <p>A ambição corre em suas veias, mas uma das <strong>Relíquias da Morte</strong> foi ocultada pela astúcia.</p>
+        <p>Ela repousa em um portal de madeira onde o seu Guardião armazena suas armaduras cotidianas e o couro descansa em silêncio.</p>
+        <p>Vá até as masmorras de repouso e explore o <strong>território à esquerda</strong>. Entre os mantos pendurados do Lorde, o tesouro aguarda o seu toque.</p>
+        <button class="close-dark" onclick="toggleDark(false)">Voltar ao Mapa</button>
+    </div>
+
+    <div id="wand"></div>
+
+    <script>
+        const env = document.getElementById('env');
+        const wand = document.getElementById('wand');
+        const mapArea = document.getElementById('map-area');
+        const darkBtn = document.getElementById('dark-lord-btn');
+        const slytherin = document.getElementById('slytherin-overlay');
+
+        env.addEventListener('click', () => env.parentElement.classList.toggle('open'));
+        darkBtn.addEventListener('click', () => toggleDark(true));
+        function toggleDark(show) { slytherin.style.display = show ? 'flex' : 'none'; }
+
+        document.addEventListener('mousemove', (e) => {
+            wand.style.left = e.pageX + 'px';
+            wand.style.top = (e.pageY - 10) + 'px';
+            wand.style.transform = `rotate(${e.pageX / 15}deg)`;
+
+            if (Math.random() > 0.88) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = e.pageX + 'px';
+                s.style.top = e.pageY + 'px';
+                document.body.appendChild(s);
+                setTimeout(() => {
+                    s.style.transition = "all 0.7s";
+                    s.style.transform = `translate(${(Math.random()-0.5)*50}px, ${(Math.random()-0.5)*50}px) scale(0)`;
+                    s.style.opacity = "0";
+                    setTimeout(() => s.remove(), 700);
+                }, 20);
+            }
+        });
+
+        function makePath(name) {
+            let x = Math.random() * 80 + 10;
+            let y = Math.random() * 80 + 10;
+            let angle = Math.random() * 360;
+            for(let i=0; i<8; i++) {
+                setTimeout(() => {
+                    const f = document.createElement('div');
+                    f.className = 'footprint';
+                    f.innerHTML = i === 0 ? `👣<span>${name}</span>` : '👣';
+                    f.style.left = x + 'vw'; f.style.top = y + 'vh';
+                    f.style.transform = `rotate(${angle}deg)`;
+                    mapArea.appendChild(f);
+                    x += Math.cos(angle)*2.5; y += Math.sin(angle)*2.5;
+                    f.animate([{opacity:0}, {opacity:1, offset:0.2}, {opacity:0}], {duration:4000});
+                    setTimeout(() => f.remove(), 4000);
+                }, i * 600);
+            }
+        }
+        setInterval(() => makePath('Harllen'), 3000);
+        setInterval(() => makePath('Lohan'), 4500);
+        setInterval(() => makePath('Heitor'), 6000);
+    </script>
+</body>
+</html>
